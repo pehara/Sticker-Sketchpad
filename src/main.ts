@@ -1,7 +1,6 @@
 // Import the CSS file for styling
 import "./style.css";
 
-// Constants for better readability
 const ONE = 1;
 
 // Class definition for stickers
@@ -9,7 +8,7 @@ class Sticker {
   constructor(private x: number, private y: number, private sticker: string) {}
 
   display(ctx: CanvasRenderingContext2D) {
-    ctx.font = "32px Arial";
+    ctx.font = "40px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(this.sticker, this.x, this.y);
@@ -56,21 +55,33 @@ class MarkerLine {
   }
 }
 
-// Select the app container and set initial constants
+// Select the app container
 const app: HTMLDivElement = document.querySelector("#app")!;
 const INITIAL_MARKER_LINES_LENGTH = 0;
 
 const gameName = "Sticker Sketchpad";
 document.title = gameName;
 
+// --- Header row: title + export button ---
+const headerRow = document.createElement("div");
+headerRow.className = "header-row";
+app.append(headerRow);
+
 const header = document.createElement("h1");
 header.textContent = gameName;
-app.append(header);
+headerRow.append(header);
 
-// Canvas
+const exportButton = document.createElement("button");
+exportButton.textContent = "Export PNG";
+exportButton.className = "export-btn";
+exportButton.addEventListener("click", exportCanvas);
+headerRow.append(exportButton);
+
+// --- Canvas ---
+const CANVAS_SIZE = 640;
 const canvas: HTMLCanvasElement = document.createElement("canvas");
-canvas.width = 480;
-canvas.height = 480;
+canvas.width = CANVAS_SIZE;
+canvas.height = CANVAS_SIZE;
 canvas.style.border = "1px solid rgba(255,255,255,0.12)";
 canvas.style.borderRadius = "12px";
 canvas.style.backgroundColor = "white";
@@ -80,8 +91,8 @@ const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 let isDrawing = false;
 const markerLines: MarkerLine[] = [];
 
-const THIN_MARKER = 3 as const;
-const THICK_MARKER = 10 as const;
+const THIN_MARKER = 4 as const;
+const THICK_MARKER = 14 as const;
 let currentMarkerThickness: typeof THIN_MARKER | typeof THICK_MARKER = THIN_MARKER;
 let selectedSticker: string | null = null;
 let toolPreview: MarkerLine | null = null;
@@ -118,9 +129,10 @@ function stopDrawing() {
 }
 
 function cursorPosition(e: MouseEvent) {
+  const rect = canvas.getBoundingClientRect();
   return {
-    x: e.clientX - canvas.offsetLeft,
-    y: e.clientY - canvas.offsetTop,
+    x: (e.clientX - rect.left) * (canvas.width / rect.width),
+    y: (e.clientY - rect.top) * (canvas.height / rect.height),
   };
 }
 
@@ -150,7 +162,7 @@ function handleToolMove(e: MouseEvent) {
   updateCanvas();
 }
 
-// Toolbar container
+// --- Toolbar container ---
 const toolbar: HTMLDivElement = document.createElement("div");
 toolbar.className = "toolbar";
 app.append(toolbar);
@@ -172,7 +184,7 @@ function makeSection(label: string): HTMLDivElement {
   return row;
 }
 
-// --- Brush section ---
+// --- Brush section (one line) ---
 const brushRow = makeSection("Brush");
 
 const thinButton = document.createElement("button");
@@ -237,7 +249,7 @@ function clearStickerSelection() {
   }
 }
 
-// --- Actions section ---
+// --- Undo / Redo / Clear section (one line) ---
 const actionRow = makeSection("Actions");
 
 const undoStack: (MarkerLine | Sticker)[] = [];
@@ -259,12 +271,6 @@ clearButton.textContent = "Clear";
 clearButton.className = "action-btn";
 clearButton.addEventListener("click", clearDrawing);
 actionRow.append(clearButton);
-
-const exportButton = document.createElement("button");
-exportButton.textContent = "Export PNG";
-exportButton.className = "action-btn primary";
-exportButton.addEventListener("click", exportCanvas);
-actionRow.append(exportButton);
 
 function undoDrawing() {
   if (isDrawing) return;
