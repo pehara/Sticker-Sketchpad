@@ -2,7 +2,6 @@
 import "./style.css";
 
 // Constants for better readability
-const ZERO = 0;
 const ONE = 1;
 
 // Class definition for stickers
