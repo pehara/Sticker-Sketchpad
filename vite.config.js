@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: `/${process.env.REPO_NAME ?? ''}/`,
+  base: `/${process.env.REPO_NAME ?? 'Sticker-Sketchpad'}/`,
 });
