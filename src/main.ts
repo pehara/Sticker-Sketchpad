@@ -29,7 +29,7 @@ class MarkerLine {
     //private sticker: string; // Add the sticker property
     private color: string; // Add the color property
 
-    constructor(initialPoint: { x: number; y: number }, thickness: number, sticker: string) {
+	constructor(initialPoint: { x: number; y: number }, thickness: number, _sticker: string) {
         this.points.push(initialPoint);
         this.thickness = thickness;
         //this.sticker = sticker;
@@ -128,7 +128,7 @@ function startDrawing(e: MouseEvent) {
 
 
 // Function to draw sticker preview separately
-function drawStickerPreview(x: number, y: number, sticker: string) {
+function drawStickerPreview(x: number, y: number, _sticker: string) {
     if (toolPreview) {
         toolPreview.display(ctx!);
     }
